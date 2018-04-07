@@ -8,29 +8,29 @@ export default class App extends React.Component {
     this.state = {stage: "scanning", hasCameraPermission: null,
       photoId: 0}
     // start, scanning, read, return
-    this.takePicture = this.takePicture.bind(this);
+    // this.takePicture = this.takePicture.bind(this);
   };
   async componentWillMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
   };
-  async takePicture() {
-    console.log('hey')
-    console.log(this.camera)
-    if (this.camera) {
-      this.camera.takePictureAsync().then(data => {
-        FileSystem.moveAsync({
-          from: data.uri,
-          to: `${FileSystem.documentDirectory}photos/Photo_${this.state.photoId}.jpg`,
-        }).then(() => {
-          this.setState({
-            photoId: this.state.photoId + 1,
-          });
-          Vibration.vibrate();
-        });
-      });
-    }
-  }
+  // async takePicture() {
+  //   console.log('hey')
+  //   console.log(this.camera)
+    // if (this.camera) {
+    //   this.camera.takePictureAsync().then(data => {
+    //     FileSystem.moveAsync({
+    //       from: data.uri,
+    //       to: `${FileSystem.documentDirectory}photos/Photo_${this.state.photoId}.jpg`,
+    //     }).then(() => {
+    //       this.setState({
+    //         photoId: this.state.photoId + 1,
+    //       });
+    //       Vibration.vibrate();
+    //     });
+    //   });
+    // }
+  // }
   render() {
     const { hasCameraPermission } = this.state;
     return (this.state.stage === "start" ?
@@ -39,15 +39,11 @@ export default class App extends React.Component {
         </View>
     : this.state.stage === "scanning" ?
       // camera business
-      <TouchableNativeFeedback onPress={this.takePicture}>
+      <TouchableNativeFeedback onPress={() => this.setState({stage: 'read'})}>
         <View style={styles.container}>
-          <Camera style={{ flex: .8 }} type={this.state.type} ref={ref => {
-            this.camera = ref; }}>
-            <TouchableNativeFeedback
-              style={{ flex: 0.3, alignSelf: 'flex-end' }}
-              onPress={this.takePicture.bind(this)}>
-            <Text style={styles.buttonText}> SNAP </Text>
-          </TouchableNativeFeedback>
+          <Camera style={{ flex: .8 }} ref={ref => {
+            this.camera = ref;
+          }}>
           </Camera>
         </View>
       </TouchableNativeFeedback>
