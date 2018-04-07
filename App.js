@@ -5,7 +5,7 @@ import { Constants, Audio, Camera, Permissions } from 'expo';
 export default class App extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {stage: "start"}
+    this.state = {stage: "start", cameFrom: "readfull"}
     // start, scanning, read, return
   }
 
@@ -14,11 +14,13 @@ export default class App extends React.Component {
       await Audio.setIsEnabledAsync(true);
       const sound = new Audio.Sound();
       if (trigger === "readfull") {
-        await sound.loadAsync(require("./assets/sounds/noscan.mp3"));
+        await sound.loadAsync(require("./assets/sounds/fullread.mp3"));
       } else if (trigger === "readquick") {
-        await sound.loadAsync(require("./assets/sounds/noscan.mp3"));
+        await sound.loadAsync(require("./assets/sounds/quickread.mp3"));
       } else if (trigger === "instructions") {
         await sound.loadAsync(require("./assets/sounds/instructions.mp3"));
+      } else if (trigger === "ready") {
+        await sound.loadAsync(require("./assets/sounds/ready.mp3"));
       }
       await sound.playAsync();
     } catch(error) {
@@ -64,7 +66,15 @@ export default class App extends React.Component {
         </View>
       </TouchableNativeFeedback>
     : this.state.stage === "scanning" ?
-      <TouchableNativeFeedback onPress={() => this.setState({stage: 'read'})}>
+      <TouchableNativeFeedback onPress={() => 
+        {
+          this.setState({stage: 'read'});
+          if (this.state.cameFrom == "readfull") {
+            this.playSound("readfull");
+          } else {
+            this.playSound("readquick");
+          }
+        }}>
         <View style={styles.container}>
           <Camera style={{flex: .8}}></Camera>
         </View>
@@ -72,19 +82,23 @@ export default class App extends React.Component {
     : this.state.stage === "read" ?
         <View style={styles.container}>
           <TouchableNativeFeedback style={styles.buttonWrapper} onPress={() =>
-            {this.setState({stage : "scanning"});
-            this.cloudcall().then((result)=>{
-              console.log(result["responses"][0]["fullTextAnnotation"]["text"])
-              console.log(result["responses"][0]["fullTextAnnotation"]["text"][5])
-            })
-          }}>
+            {
+              this.setState({stage : "scanning", cameFrom: "readfull"});
+              this.playSound("ready")
+              this.cloudcall().then((result)=>{
+                console.log(result["responses"][0]["fullTextAnnotation"]["text"])
+              })
+            }}>
             <View style={[styles.button, styles.topButton]}>
                 <Text style={styles.buttonText}>Read Full</Text>
             </View>
           </TouchableNativeFeedback>
           <TouchableNativeFeedback style={styles.buttonWrapper} onPress={() => {
-            this.setState({stage : "scanning"});
-            this.playSound("readfull")
+            this.setState({stage : "scanning", cameFrom: "readquick"});
+            this.playSound("ready")
+            this.cloudcall().then((result)=>{
+                console.log(result["responses"][0]["fullTextAnnotation"]["text"])
+              })
           }}>
             <View style={[styles.button, styles.bottomButton]}>
                 <Text style={styles.buttonText}>Read Quick</Text>
