@@ -64,14 +64,14 @@ export default class App extends React.Component {
         </View>
       </TouchableNativeFeedback>
     : this.state.stage === "scanning" ?
-      <TouchableNativeFeedback onPress={() => this.setState({stage: 'read'})}
+      <TouchableNativeFeedback onPress={() => this.setState({stage: 'read'})}>
         <View style={styles.container}>
           <Camera style={{flex: .8}}></Camera>
         </View>
       </TouchableNativeFeedback>
     : this.state.stage === "read" ?
         <View style={styles.container}>
-          <TouchableNativeFeedback style={styles.buttonWrapper} onPress={() => 
+          <TouchableNativeFeedback style={styles.buttonWrapper} onPress={() =>
             {this.setState({stage : "scanning"});
             this.cloudcall().then((result)=>{
               console.log(result["responses"][0]["fullTextAnnotation"]["text"])
@@ -82,7 +82,10 @@ export default class App extends React.Component {
                 <Text style={styles.buttonText}>Read Full</Text>
             </View>
           </TouchableNativeFeedback>
-          <TouchableNativeFeedback style={styles.buttonWrapper} onPress={() => this.playSound("readfull")}>
+          <TouchableNativeFeedback style={styles.buttonWrapper} onPress={() => {
+            this.setState({stage : "scanning"});
+            this.playSound("readfull")
+          }}>
             <View style={[styles.button, styles.bottomButton]}>
                 <Text style={styles.buttonText}>Read Quick</Text>
             </View>
