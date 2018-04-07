@@ -17,12 +17,16 @@ export default class App extends React.Component {
       <Text> hey </Text>
     : this.state.stage === "read" ?
         <View style={styles.container}>
-          <View style={[styles.button, styles.topButton]}>
-              <Text style={styles.buttonText}> hey </Text>
-          </View>
-            <View style={[styles.button, styles.bottomButton]}>
-                <Text style={styles.buttonText}> hey </Text>
+          <TouchableNativeFeedback style={styles.buttonWrapper} onLongPress={() => (console.log())}>
+            <View style={[styles.button, styles.topButton]}>
+                <Text style={styles.buttonText}>Read Full</Text>
             </View>
+          </TouchableNativeFeedback>
+          <TouchableNativeFeedback style={styles.buttonWrapper} onLongPress={() => (console.log())}>
+            <View style={[styles.button, styles.bottomButton]}>
+                <Text style={styles.buttonText}>Read Quick</Text>
+            </View>
+          </TouchableNativeFeedback>
         </View>
         : <Text> hey </Text>
       );
@@ -49,15 +53,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#4FC3F7',
     alignItems: 'stretch',
-    justifyContent: 'space-around'
+    justifyContent: 'center'
   },
   buttonWrapper: {
   },
   button: {
-    flex: .1,
-    flexDirection: 'row',
-    padding: 100,
-    justifyContent: 'center'
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   topButton: {
     backgroundColor: '#4DD0E1'
@@ -66,7 +69,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#E57373'
   },
   buttonText: {
-    fontSize: 30
+    fontSize: 50,
+    color: '#fff'
   },
   title: {
     fontSize: 45,
